@@ -1,7 +1,7 @@
-package fr.unilasalle.flight.api.beans;
+package fr.unilasalle.flight.api.beans; // Pour tester, lancer le quarkus aller sur la page web http local host :8080 avec postman
 
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,11 +14,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name="planes")
+@Table(name="planes") //base de donnée de planes
 
-public class Avion extends PanacheEntity {
+public class Avion extends PanacheEntityBase {
     @Id
-    @SequenceGenerator(name = "planes_sequence", allocationSize=1)
+    @SequenceGenerator(name = "planes_sequence_inJavaCode", sequenceName = "planes_sequence", allocationSize=1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "planes_sequence_inJavaCode")//Création de l'id dans la bdd
     private long Id;
 

@@ -1,7 +1,7 @@
 package fr.unilasalle.flight.api.resources;
 
-import fr.unilasalle.flight.api.beans.passager;
-import fr.unilasalle.flight.api.repositories.passagerRepository;
+import fr.unilasalle.flight.api.beans.passenger;
+import fr.unilasalle.flight.api.repositories.passengerRepository;
 import fr.unilasalle.flight.api.beans.Avion;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
@@ -18,48 +18,52 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 
-public class passagerResource extends GenericResource {//Fait appel au repositories pour récup dans la bdd et ensuite construit la réponse
+public class passengerResource extends GenericResource {//Fait appel au repositories pour récup dans la bdd et ensuite construit la réponse
     @Inject
-    private passagerRepository repository;
+    private passengerRepository repository;
 
     @Inject
     Validator validator;
 
     @GET
-    public Response getPlanes(@QueryParam("operator") String operator){
-        List<passager> list;
-        if(StringUtils.isBlank(operator)){
-            list = repository.listAll();
-        }else{
-            list = repository.findByOperator(operator);
-        }
-        return getOr404(list);
+    @Path("/{id}")
+    public Response getpassenger(@PathParam("id") Long id){
+        var passenger = repository
+                .findByIdOptional(id).orElse(null);
+        return getOr404(passenger);
     }
 
-    @GET
+    @PUT
     @Path("/{id}")
-    public Response getPlane(@PathParam("id") Long id){
-        var avion = repository
-                .findByIdOptional(id).orElse(null);
-        return getOr404(avion);
-    }
-    @POST
     @Transactional
-    public Response createPlane(Avion plane){
-        var violations = validator.validate(plane);
-        if(!violations.isEmpty()){
+    public Response updatePassenger(@PathParam("id") Long id, passenger updatedPassenger) {
+
+        var violations = validator.validate(updatedPassenger);
+        if (!violations.isEmpty()) {
             return Response.status(400)
                     .entity(new ErrorWrapper(violations))
                     .build();
-
         }
-        try{
-            repository.persistAndFlush(plane);
-            return Response.status(201).build();
+        var existingPassenger = repository.findByIdOptional(id).orElse(null);
+
+
+        if (existingPassenger == null) {
+            return Response.status(404).entity(new ErrorWrapper("Passenger not found")).build();
+        }
+
+        // Update the existing passenger with the new data
+        existingPassenger.setSurname(updatedPassenger.getSurname());
+        existingPassenger.setFirstname(updatedPassenger.getFirstname());
+        existingPassenger.setEmail_address(updatedPassenger.getEmail_address());
+
+        try {
+            repository.persistAndFlush(existingPassenger);
+            return Response.status(200).build();
         } catch (PersistenceException e) {
             return Response.serverError()
-                    .entity(new ErrorWrapper(e.getMessage())).build();
+                    .entity(new ErrorWrapper(e.getMessage()))
+                    .build();
         }
-
     }
+
 }

@@ -1,7 +1,7 @@
 package fr.unilasalle.flight.api.beans;
 
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,16 +10,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name="flights")
 
-public class Vol extends PanacheEntity {
+public class Vol extends PanacheEntityBase {
     @Id
-    @SequenceGenerator(name = "planes_sequence", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "planes_sequence_inJavaCode") //Création d'un id unique dans la bdd
+    @SequenceGenerator(name = "flights_sequence", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "flights_sequence") //Création d'un id unique dans la bdd
     private long Id;
 
 
@@ -37,21 +40,22 @@ public class Vol extends PanacheEntity {
 
     @NotNull(message = "information of departure cannot be null")
     @Column(nullable = false)
-    private int departure_date;
+    private LocalDate departure_date;
 
     @NotNull(message = "information of departure cannot be null")
     @Column(nullable = false)
-    private int departure_time;
+    private LocalTime departure_time;
 
     @NotNull(message = "information of arrival cannot be null")
     @Column(nullable = false)
-    private int arrival_time;
+    private LocalTime arrival_time;
 
     @NotNull(message = "information of arrival cannot be null")
     @Column(nullable = false)
-    private int arrival_date;
+    private LocalDate arrival_date;
 
     @NotNull(message = "plane id cannot be null")
-    @Column(nullable = false)
-    private int plane_id;
+    @ManyToOne // Jointure
+    @JoinColumn(name = "planes_id", referencedColumnName = "id")
+    private Avion plane_id;
 }

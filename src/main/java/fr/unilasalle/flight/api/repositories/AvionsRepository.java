@@ -7,10 +7,11 @@ import jakarta.enterprise.inject.Model;
 import java.util.List;
 
 @Model
-public class AvionsRepository implements
-        PanacheRepositoryBase<Avion, Long> {
+public class AvionsRepository implements   //Repository : commandes sql pour la bdd
+            PanacheRepositoryBase<Avion, Long> {
 
-    public List<Avion> findByOperator(String operatorParameter) {
+    public List<Avion> findByOperator(String operatorParameter) { //Permet la récupération par fabricant
+
         return find("operator", operatorParameter).list();
     }
 

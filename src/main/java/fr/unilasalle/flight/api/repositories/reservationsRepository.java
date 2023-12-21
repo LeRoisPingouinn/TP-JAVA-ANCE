@@ -7,11 +7,12 @@ import jakarta.enterprise.inject.Model;
 import java.util.List;
 
 @Model
-public class reservationsRepositories implements
+public class reservationsRepository implements
         PanacheRepositoryBase<reservations, Long> {
 
-    public List<reservations> findByOperator(String operatorParameter) {
+    public List<reservations> findByflight_idParameter(long flight_idParameter) {
 
-        return find("operator", operatorParameter).list();
+        return find("flight_id.id", flight_idParameter).list();
     }
+
 }
